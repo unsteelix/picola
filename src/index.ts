@@ -1,5 +1,5 @@
 import Koa, { Context } from 'koa'
-import bodyParser from 'koa-bodyparser'
+import body from 'koa-better-body'
 import Router from 'koa-router'
 import json from 'koa-json'
 import logger from 'koa-logger'
@@ -19,14 +19,13 @@ router.get('/image', imageRoute)
 // Middlewares
 app.use(json())
 app.use(logger())
-app.use(bodyParser())
+app.use(body({
+  multipart: true
+}))
 
 // Routes
 app.use(router.routes()).use(router.allowedMethods())
 
-// app.use(async (ctx: Context) => {
-
-// });
 
 app.on('error', (err: Error, ctx: Context) => {
   console.error('server error', err, ctx)

@@ -1,9 +1,6 @@
 import { Context, Next } from "koa"
+import send from 'koa-send'
 
 export default async (ctx: Context, next: Next) => {
-  ctx.body = {
-    wer : "erew"
-  }
-
-  await next()
+  await send(ctx, './src/pages/index.html')
 }
