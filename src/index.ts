@@ -1,37 +1,35 @@
-import Fastify, { FastifyInstance, RouteShorthandOptions } from 'fastify'
-import { Server, IncomingMessage, ServerResponse } from 'http'
+import Koa, { Context } from 'koa'
+import bodyParser from 'koa-bodyparser'
+import Router from 'koa-router'
+import json from 'koa-json'
+import logger from 'koa-logger'
+import constants from './utils/constants'
+import indexRoute from './routes/index'
+import uploadRoute from './routes/upload'
+import imageRoute from './routes/image'
 
-const server: FastifyInstance = Fastify({})
+const app = new Koa();
+const router = new Router();
 
-const opts: RouteShorthandOptions = {
-  schema: {
-    response: {
-      200: {
-        type: 'object',
-        properties: {
-          pong: {
-            type: 'string'
-          }
-        }
-      }
-    }
-  }
-}
+router.get('/', indexRoute)
+router.post('/upload', uploadRoute)
+router.get('/image', imageRoute)
 
-server.get('/ping', opts, async (request, reply) => {
-  return { pong: 'it worked!' }
-})
 
-const start = async () => {
-  try {
-    await server.listen(3000)
+// Middlewares
+app.use(json())
+app.use(logger())
+app.use(bodyParser())
 
-    const address = server.server.address()
-    const port = typeof address === 'string' ? address : address?.port
+// Routes
+app.use(router.routes()).use(router.allowedMethods())
 
-  } catch (err) {
-    server.log.error(err)
-    process.exit(1)
-  }
-}
-start()
+// app.use(async (ctx: Context) => {
+
+// });
+
+app.on('error', (err: Error, ctx: Context) => {
+  console.error('server error', err, ctx)
+});
+
+app.listen(constants.PORT);

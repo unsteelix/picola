@@ -4,6 +4,7 @@
       "outDir": "dist",
       "sourceMap": true,
       "strict": true,
+      "esModuleInterop": true,
       "target": "es2017",
     },
     "compileOnSave": true,
