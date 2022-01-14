@@ -103,8 +103,8 @@ dist
 # TernJS port file
 .tern-port
 
-volume/*
 !volume/.gitkeep
 !volume/files/.gitkeep
 !volume/files/original/.gitkeep
 !volume/files/optimized/.gitkeep
+volume/*
