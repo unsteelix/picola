@@ -104,5 +104,6 @@ dist
 .tern-port
 
 volume/*
+!volume/.gitkeep
 !volume/files/original/.gitkeep
 !volume/files/optimized/.gitkeep
