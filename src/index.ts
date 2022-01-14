@@ -7,16 +7,18 @@ import constants from './utils/constants'
 import indexRoute from './routes/index'
 import uploadRoute from './routes/upload'
 import imageRoute from './routes/image'
+import cors from '@koa/cors'
 
 const app = new Koa();
 const router = new Router();
 
 router.get('/', indexRoute)
 router.post('/upload', uploadRoute)
-router.get('/image', imageRoute)
+router.get('/image/:id', imageRoute)
 
 
 // Middlewares
+app.use(cors());
 app.use(json())
 app.use(logger())
 app.use(body({

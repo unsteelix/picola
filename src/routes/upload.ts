@@ -1,8 +1,7 @@
 import { Context, Next } from "koa"
-import fs from 'fs'
 import path from 'path'
 import { uid } from 'uid/secure'
-import { moveFile } from '../utils'
+import { moveFile, getImgDimensions } from '../utils'
 import DB from '../database'
 
 
@@ -13,9 +12,15 @@ interface File {
   type: string
 }
 
+interface Req extends Request {
+  files: Object
+}
+
 export default async (ctx: Context, next: Next) => {
 
-  const files = ctx.request.files
+  const request = <Req><unknown>ctx.request;
+
+  const { files } = request
 
   if(!files){
     throw new Error('missing files')
@@ -32,13 +37,17 @@ export default async (ctx: Context, next: Next) => {
     const ext = name.split('.')[name.split('.').length - 1]
     const id = uid(14)
     const newName = `${id}.${ext}`
-    const newPath = path.join(__dirname, '../../volume/files', newName);
+    const newPath = path.join(__dirname, '../../volume/files/original', newName);
+
+    const { width, height } = await getImgDimensions(oldPath)
 
     const data = {
       name,
       ext,
       type,
       size,
+      width,
+      height,
       date: Date.now()
     }
 

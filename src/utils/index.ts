@@ -1,5 +1,27 @@
 import fs from 'fs'
 import path from 'path'
+import sizeOf  from 'image-size';
+
+/**
+ * get width, height of image
+ */
+export const getImgDimensions = async (path: string) => {
+    try {
+        const dimensions = await sizeOf(path)
+        const { width, height } = dimensions
+
+        if(!width || !height){
+            throw new Error('could not determine the image dimensions')
+        }
+
+        return {
+            width,
+            height
+        }
+    } catch (err: any) {
+        throw new Error(err.message)
+    }
+}
 
 export const moveFile = async (oldPath: string, newPath: string) => {
   // 1. Create the destination directory
