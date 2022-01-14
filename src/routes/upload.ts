@@ -1,8 +1,17 @@
 import { Context, Next } from "koa"
 import fs from 'fs'
 import path from 'path'
-import { uid } from 'uid/secure';
+import { uid } from 'uid/secure'
 import { moveFile } from '../utils'
+import DB from '../database'
+
+
+interface File {
+  path: string,
+  name: string,
+  size: string,
+  type: string
+}
 
 export default async (ctx: Context, next: Next) => {
 
@@ -18,12 +27,20 @@ export default async (ctx: Context, next: Next) => {
 
   for(let file of listFile){
 
-    const { path: oldPath, name, size, type } = file
+    const { path: oldPath, name, size, type } = <File>file
 
     const ext = name.split('.')[name.split('.').length - 1]
     const id = uid(14)
     const newName = `${id}.${ext}`
     const newPath = path.join(__dirname, '../../volume/files', newName);
+
+    const data = {
+      name,
+      ext,
+      type,
+      size,
+      date: Date.now()
+    }
 
     try {
       await moveFile(oldPath, newPath);
@@ -32,22 +49,34 @@ export default async (ctx: Context, next: Next) => {
         status: 'success',
         data: {
           id,
-          name,
-          ext,
-          type,
-          size
+          ...data
+        }
+      })
+
+      DB.merge('/', {
+        [id]: {
+          ...data
         }
       })
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
 
       listRes.push({
         status: 'error',
         data: {
-          name
+          name,
+          error
         }
       })
+
+      DB.merge('/', {
+        [id]: {
+          ...data,
+          error: 'uploading with error: ' + error.message
+        }
+      })
+
     }
 
   }

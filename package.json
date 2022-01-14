@@ -23,6 +23,7 @@
     "koa-logger": "^3.2.1",
     "koa-router": "^10.1.1",
     "koa-send": "^5.0.1",
+    "node-json-db": "^1.4.1",
     "uid": "^2.0.0"
   }
 }
