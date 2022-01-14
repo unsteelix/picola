@@ -112,9 +112,8 @@ export default async (ctx: Context, next: Next) => {
   const format = engineOptions.format
   let newName = '' 
   
-  Object.entries(engineOptions).map((el: any) => {
+  Object.entries({...resizeOptions, ...engineOptions}).map((el: any) => {
     let [key, val] = el;
-    console.log('\n\n+++', key, val, '\n\n')
     newName += `${key}-${val}_`
   })
   newName = `${newName.slice(0, newName.length - 1)}.${format}`
