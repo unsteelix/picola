@@ -32,9 +32,9 @@ export default async (ctx: Context, next: Next) => {
 
   for(let file of listFile){
 
-    const { path: oldPath, name, size, type } = <File>file
+    const { path: oldPath, name: originalName, size, type } = <File>file
 
-    const ext = name.split('.')[name.split('.').length - 1]
+    const ext = originalName.split('.')[originalName.split('.').length - 1]
     const id = uid(14)
     const newName = `${id}.${ext}`
     const newPath = path.join(__dirname, '../../volume/files/original', newName);
@@ -42,7 +42,8 @@ export default async (ctx: Context, next: Next) => {
     const { width, height } = await getImgDimensions(oldPath)
 
     const data = {
-      name,
+      name: newName,
+      originalName,
       ext,
       type,
       size,

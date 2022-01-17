@@ -5,6 +5,7 @@ import DB from '../database'
 import send from 'koa-send'
 import sharp from 'sharp'
 import mime from 'mime-types'
+import utils, { parseQueryToImgParams } from '../utils'
 
 // enum Params {
 //   width = 'width',
@@ -23,21 +24,14 @@ import mime from 'mime-types'
 //   [key in Param]?: string
 // }
 
+
 /**
  * 
- *      format    jpg / png/ webp / tiff
- *      size      100-100
- *      fit       
  * 
+ *      [resizeOptions][engineOptions][otherOptions?].[format]
  * 
- *      format_size_fit.format
- *      webp_100-100_contain.webp
- *      100-100_contain.webp
- * 
- *      [size_fit][engine opts].[format]
- *      100-100_contain_quality-100_lossless.webp
- *        
- * 
+ *      [width_height_fit?]_[quality]_[blur_sharpen_hue].format
+ *      width-100_height-100_fit-cover_quality-90_blur-10_sharpen-10_hue-10.web.p
  * 
  *      width
  *      height
@@ -48,6 +42,7 @@ import mime from 'mime-types'
  * 
  *      save
  * 
+ *      [format][size][engineOpts?][other?]
  *      
  */
 
@@ -72,44 +67,9 @@ export default async (ctx: Context, next: Next) => {
   }
 
   // return optimized
-  const listEngineOption = ['format', 'quality']
-  const listResizeOption = ['width', 'height', 'fit']
-  
-  let engineOptions: any = {}
-  let resizeOptions: any = {}
-
-
-  // make option objects
-  Object.entries(query).forEach((para: any) => {
-    let [param, val] = para
-    
-    if(listEngineOption.includes(param)){
-      if(param === 'quality') {
-        engineOptions[param] = parseInt(val)
-      } else {
-        engineOptions[param] = val
-      }
-    }
-
-    if(listResizeOption.includes(param)){
-      if(param === 'width' || param === 'height') {
-        resizeOptions[param] = parseInt(val)
-      } else {
-        resizeOptions[param] = val
-      }
-    }
-  })
-
-  // check required params
-  const listRequired = ['format']
-  listRequired.forEach((el: any) => {
-    if(!engineOptions[el]) {
-      throw new Error(`missing '${el}' param`)
-    }
-  })
+  const { format, resizeOptions, engineOptions, otherOptions } = parseQueryToImgParams(query)
 
   // generate new fileName
-  const format = engineOptions.format
   let newName = '' 
   
   Object.entries({...resizeOptions, ...engineOptions}).map((el: any) => {
@@ -136,10 +96,24 @@ export default async (ctx: Context, next: Next) => {
 
   const originalFilePath = path.resolve(__dirname, '../../volume/files/original', fileName)
 
-  const optimizedImgBuffer = await sharp(originalFilePath)
-    .resize((resizeOptions.width || resizeOptions.height) ? resizeOptions : {})
-    .toFormat(format, engineOptions)
-    .toBuffer()
+  let sharpEl = sharp(originalFilePath)
+    .resize(resizeOptions)
+  
+  if(format) {
+    sharpEl = sharpEl
+      .toFormat(format, engineOptions)
+  }
+
+  // if(Object.keys(otherOptions).length > 0) {
+  //   const [operationFullName, operationValue] = Object.entries(otherOptions)[0]
+  //   const [operationName, operationKey] = operationFullName.split('.')
+
+  //   sharpEl = sharpEl.[operationName]({
+  //       [operationKey]: operationValue
+  //     })
+  // }
+
+  const optimizedImgBuffer = await sharpEl.toBuffer()
 
   // check 'save' param
   let withSaving = true
