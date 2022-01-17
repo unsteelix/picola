@@ -1,138 +1,68 @@
 import { Context, Next } from "koa"
 import path from 'path'
-import fs from 'fs'
-import DB from '../database'
-import send from 'koa-send'
 import sharp from 'sharp'
 import mime from 'mime-types'
-import utils, { parseQueryToImgParams } from '../utils'
-
-// enum Params {
-//   width = 'width',
-//   height = 'height',
-//   fit = 'fit',
-//   format = 'format',
-//   quality = 'quality',
-//   save = 'save'
-// }
-
-// type Param = 'width' | 'height' | 'fit' | 'format' | 'quality' | 'save'
-
-// type ListParam = Param[]
-
-// type ImgParams = {
-//   [key in Param]?: string
-// }
-
-
-/**
- * 
- * 
- *      [resizeOptions][engineOptions][otherOptions?].[format]
- * 
- *      [width_height_fit?]_[quality]_[blur_sharpen_hue].format
- *      width-100_height-100_fit-cover_quality-90_blur-10_sharpen-10_hue-10.web.p
- * 
- *      width
- *      height
- *      fit
- *      format
- *      
- *      quality
- * 
- *      save
- * 
- *      [format][size][engineOpts?][other?]
- *      
- */
+import { getImgById, checkForOriginal, queryParamsToOptions, fillVoidOptions, generateFileName, checkForCache, resizeImg, formatImg, checkForSave, otherFormatImg } from '../utils/image'
 
 
 export default async (ctx: Context, next: Next) => {
 
-
   const { params } = ctx
-  const { id } = params
-
-  const query = ctx.request.query
+  const { id } = params  
   
-  const image = DB.get(`/${id}`)
+  const image = getImgById(id)
+  const { name: fileName } = image
 
-  const { ext } = image
+  ctx.image = image
 
-  const fileName = `${id}.${ext}`
 
-  // return original
-  if(Object.keys(query).length === 0){
-    return await send(ctx, `./volume/files/original/${fileName}`)
+  // original
+  if(await checkForOriginal(ctx)) {
+    console.log('return original')
+    return
   }
 
-  // return optimized
-  const { format, resizeOptions, engineOptions, otherOptions } = parseQueryToImgParams(query)
+  // optimized
+  let options = queryParamsToOptions(ctx)
 
-  // generate new fileName
-  let newName = '' 
-  
-  Object.entries({...resizeOptions, ...engineOptions}).map((el: any) => {
-    let [key, val] = el;
-    newName += `${key}-${val}_`
-  })
-  newName = `${newName.slice(0, newName.length - 1)}.${format}`
+  // fill void options
+  options = fillVoidOptions(ctx, options)
+  console.log('\noptions:', JSON.stringify(options, null, 2), '\n') 
 
-  const contentType = mime.contentType(newName) || 'image/jpeg'
+  // generate new name
+  const newFileName = generateFileName(ctx, options)
+  console.log('generic filename: ', newFileName) 
 
   // use cache
-  const cacheFilePath = path.resolve(__dirname, '../../volume/files/optimized', newName)
-
-  try {
-    const cache = fs.readFileSync(cacheFilePath)
-  
-    ctx.response.set("content-type", contentType);
-    ctx.body = cache
+  if(await checkForCache(ctx, newFileName)) {
+    console.log('return cache')
     return
-
-  } catch(e) {
-    console.error(e)
   }
 
+  // optimize
   const originalFilePath = path.resolve(__dirname, '../../volume/files/original', fileName)
 
   let sharpEl = sharp(originalFilePath)
-    .resize(resizeOptions)
+
+  // resize
+  sharpEl = resizeImg(ctx, sharpEl, options)
   
-  if(format) {
-    sharpEl = sharpEl
-      .toFormat(format, engineOptions)
-  }
+  // toFormat
+  sharpEl = formatImg(ctx, sharpEl, options)
 
-  // if(Object.keys(otherOptions).length > 0) {
-  //   const [operationFullName, operationValue] = Object.entries(otherOptions)[0]
-  //   const [operationName, operationKey] = operationFullName.split('.')
+  // other image manipulations
+  sharpEl = otherFormatImg(ctx, sharpEl, options)
 
-  //   sharpEl = sharpEl.[operationName]({
-  //       [operationKey]: operationValue
-  //     })
-  // }
-
+  // toBuffer
   const optimizedImgBuffer = await sharpEl.toBuffer()
 
-  // check 'save' param
-  let withSaving = true
-  if('save' in query && query.save === 'false'){
-    withSaving = false
-  }
+  const contentType = mime.contentType(newFileName) || 'image/jpeg'
 
   ctx.response.set("content-type", contentType);
   ctx.body = optimizedImgBuffer
 
-  if(withSaving){
-    const optimizedFilePath = path.resolve(__dirname, '../../volume/files/optimized', newName)
-
-    fs.writeFile(optimizedFilePath, optimizedImgBuffer, err => {
-      if (err) {
-        console.error(err)
-        return
-      })
-  }
+  // save
+  checkForSave(options, newFileName, optimizedImgBuffer)
 
   return
 }

@@ -8,9 +8,12 @@ import DB from '../database'
 
 // convert get param to new structure
 export const optionsMap: {[key: string]: any} = {
+    'f': {
+        link: 'format'
+    },
     'format': {
         group: 'format',
-        available: ['jpeg', 'png', 'webp']
+        available: ['jpeg', 'png', 'webp', 'gif']
     },
     'w': {
         link: 'width'
@@ -19,7 +22,7 @@ export const optionsMap: {[key: string]: any} = {
         group: 'resize',
         type: 'integer',
         min: 1,
-        max: 2000
+        max: 6000
     },
     'h': {
         link: 'height'
@@ -28,10 +31,7 @@ export const optionsMap: {[key: string]: any} = {
         group: 'resize',
         type: 'integer',
         min: 1,
-        max: 500
-    },
-    'f': {
-        link: 'fit'
+        max: 6000
     },
     'fit': {
         group: 'resize',
@@ -120,7 +120,7 @@ export const queryParamsToOptions = (ctx: Context) => {
             val = convertType(type, val) // convert type
             checkValue(option, val)
 
-            console.log(`[${type}][${JSON.stringify(group, null, 2)}] ${JSON.stringify(key, null, 2)} => ${JSON.stringify(val, null, 2)}`) 
+            console.log(`[${group}]${type ? `[${type}]` : '[       ]'} ${JSON.stringify(key, null, 2)} => ${JSON.stringify(val, null, 2)}`) 
             
             if(!isLongPathName(key)) { // short
 

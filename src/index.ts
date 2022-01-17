@@ -8,25 +8,26 @@ import constants from './utils/constants'
 import indexRoute from './routes/index'
 import uploadRoute from './routes/upload'
 import imageV1Route from './routes/imageV1'
-import imageV2Route from './routes/imageV2'
 
 const app = new Koa();
 const router = new Router();
 
 router.get('/', indexRoute)
 router.post('/upload', uploadRoute)
+
 router.get('/image/:id', imageV1Route)
-router.get('/v1/image/:id', imageV1Route)
-router.get('/v2/image/:id', imageV2Route)
+router.get('/img/:id', imageV1Route)
+router.get('/i/:id', imageV1Route)
+
+router.get('/v1/img/:id', imageV1Route)
+router.get('/v1/i/:id', imageV1Route)
 
 
 // Middlewares
 app.use(cors());
 app.use(json())
 app.use(logger())
-app.use(body({
-  multipart: true
-}))
+app.use(body({ multipart: true }))
 
 // Routes
 app.use(router.routes()).use(router.allowedMethods())

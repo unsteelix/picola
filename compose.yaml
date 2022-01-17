@@ -1,0 +1,13 @@
+services:
+
+  picola:
+    build: 
+      context: .
+    ports:
+      - 7400:3000
+    volumes:
+      - picola_volume:/app/volume
+    restart: always
+
+volumes:
+  picola_volume:

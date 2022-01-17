@@ -23,11 +23,11 @@ class Database {
     }
 
     get(path: string) {
-        //console.log('[DB] GET ' + path)
+        console.log('[DB] GET ' + path)
 
         try {
             const data = this.db.getData(path);
-            console.log(data)
+            //console.log(data)
             return data;
         } catch(e: any) {
             console.error(`[DB] ${e.message}`)
