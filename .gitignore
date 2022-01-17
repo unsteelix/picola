@@ -105,7 +105,4 @@ dist
 
 volume/*
 
-!volume/files/original/.gitkeep
-!volume/files/optimized/.gitkeep
-!volume/files/.gitkeep
-!volume/.gitkeep
+!*.gitkeep
