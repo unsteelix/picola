@@ -6,13 +6,6 @@ import fs from 'fs'
 import DB from '../database'
 
 
-//////// refactor to auto
-const listResizeOptions   = ['width', 'height', 'fit']
-const listMainOptions     = ['format', ...listResizeOptions]
-const listImageOperations = ['rotate', 'flip', 'flop', 'affine', 'sharpen', 'median', 'blur', 'flatten', 'gamma', 'negate', 'normalise', 'normalize', 'clahe', 'convolve', 'threshold', 'boolean', 'linear', 'recomb', 'modulate']
-
-
-
 // convert get param to new structure
 export const optionsMap: {[key: string]: any} = {
     'format': {
@@ -372,7 +365,7 @@ export const isNeedSaving = (options: any) => {
 
 
 // convert string to other type 
-export const convertType = (type: string, value: string): string | number | Array<any> => {
+export const convertType = (type: string, value: string): string | number | Array<any> | boolean => {
 
     if(type === 'integer') {
       return parseInt(value)
@@ -393,6 +386,10 @@ export const convertType = (type: string, value: string): string | number | Arra
     if(type === 'arrayFloat') {
       return value.split(',').map(el => parseFloat(el))
     }
+
+    if(type === 'boolean') {
+        return value === 'true' ? true : false
+      }
 
     return value
 }

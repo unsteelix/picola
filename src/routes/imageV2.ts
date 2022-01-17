@@ -1,18 +1,8 @@
 import { Context, Next } from "koa"
 import path from 'path'
-import fs from 'fs'
-import send from 'koa-send'
 import sharp from 'sharp'
 import mime from 'mime-types'
-import utils, { parseQueryToImgParams } from '../utils'
-import { getImgById, checkForOriginal, queryParamsToOptions, isNeedResize, fillVoidOptions, generateFileName, checkForCache, resizeImg, formatImg, checkForSave, otherFormatImg } from '../utils/image'
-
-
-
-
-
-
-
+import { getImgById, checkForOriginal, queryParamsToOptions, fillVoidOptions, generateFileName, checkForCache, resizeImg, formatImg, checkForSave, otherFormatImg } from '../utils/image'
 
 
 export default async (ctx: Context, next: Next) => {
@@ -27,8 +17,7 @@ export default async (ctx: Context, next: Next) => {
 
 
   // original
-  const isOriginal = await checkForOriginal(ctx)
-  if(isOriginal) {
+  if(await checkForOriginal(ctx)) {
     console.log('return original')
     return
   }
@@ -38,7 +27,6 @@ export default async (ctx: Context, next: Next) => {
 
   // fill void options
   options = fillVoidOptions(ctx, options)
-
   console.log('\noptions:', JSON.stringify(options, null, 2), '\n') 
 
   // generate new name
@@ -46,8 +34,7 @@ export default async (ctx: Context, next: Next) => {
   console.log('generic filename: ', newFileName) 
 
   // use cache
-  const isCache = await checkForCache(ctx, newFileName)
-  if(isCache) {
+  if(await checkForCache(ctx, newFileName)) {
     console.log('return cache')
     return
   }
