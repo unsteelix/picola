@@ -1,4 +1,312 @@
-<form action="/upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="files" multiple required />
-    <input type="submit" value="upload" />
-</form>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Picola</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Dongle:wght@300;400;700&display=swap');
+            html {
+                font-size: 28px;
+            }
+
+            body {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+
+                font-family: 'Dongle', sans-serif;
+                color: #606d74;
+            }
+
+            .links {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+            }
+
+            .links a {
+                font-size: 1rem;
+                text-decoration: none;
+                color: #709fb3;
+            }
+
+            .pic-block {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                width: 1200px;
+                height: 350px;
+                background-image: url(/i/e5ce5bbc993915);
+                position: relative;
+
+                -webkit-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+                -moz-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+                box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+            }
+
+            .pic-block-text {
+                top: -115px;
+                right: 0px;
+                font-size: 110px;
+                position: relative;
+                color: aliceblue;
+            }
+
+            .form-block {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+
+                width: 1200px;
+                height: auto;
+            }
+
+            .form-block .left {
+                width: auto;
+                max-width: 48%;
+            }
+
+            .form-block .right {
+                width: 50%;
+                margin-top: 20px
+            }
+
+            #form-place {
+                margin: 20px 0;
+            }
+
+            #upload-btn-place {
+                background-color: #a1c2d5;
+                color: #f9f9f9;
+                border-radius: 0;
+                cursor: pointer;
+                text-align: center;
+                font-size: 2rem;
+                margin-top: 20px;
+
+                -webkit-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+                -moz-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+                box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+            }
+
+            label {
+                cursor: pointer;
+                line-height: 26px;
+                font-size: 1rem;
+            }
+
+            .select-files-bth {
+                font-size: 3rem;
+                padding: 50px 0;
+            }
+            
+            #upload-photo {
+                opacity: 0;
+                position: absolute;
+                z-index: -1;
+            }
+
+            .one-res-file {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+
+                height: 180px;
+                padding: 10px 0;
+                border-bottom: 1px solid gainsboro;
+            }
+
+            .one-res-file:last-child {
+                border: none;
+            }
+
+            .one-res-file .img {
+                width: 250px;
+                height: 180px;
+            }
+
+            .one-res-file .img img {
+                max-width: 250px;
+                max-height: 180px;
+                width: auto;
+                height: auto;
+            }
+
+            .one-res-file .info {
+                font-size: 1rem;
+                line-height: 1rem;
+                margin: 10px;
+            }
+
+
+
+        </style>
+    </head>
+    <body>
+
+        <div class="links">
+            <a href="/">Home</a>
+            <a href="/docs">Docs</a>
+        </div>
+
+        <div class="pic-block">
+            <div class="pic-block-text">Picola</div>
+        </div>
+
+        <div class="error-block" id="error-place"></div>
+
+        <div class="form-block">
+            <div class="left">
+                <div id="form-place"></div>
+                <div id="upload-btn-place"></div>
+            </div>
+            <div class="right">
+                <div id="response-place"></div>
+            </div>
+        </div>
+
+        
+        
+        <script src="http://code.jquery.com/jquery.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+
+            const formTextState_Default = 'Select your pics...'
+            const uploadBtnState_Default = 'Upload'
+            const uploadBtnState_Loading = 'Uploading...'
+
+            const renderForm = () => {
+                const form = `<form action="/upload" method="post" enctype="multipart/form-data">
+                    <label for="upload-photo" id='input-file-label'><div class='select-files-bth'>${formTextState_Default}</div></label>
+                    <input type="file" name="files" id="upload-photo" multiple required />
+                </form>`
+                $('#form-place').html(form)
+                $('#upload-photo').on('change', onFileInputChange)
+            }
+
+            const renderUploadBtn = (state) => {
+                if(state === 'default') {
+                    $('#upload-btn-place').html(uploadBtnState_Default)
+                } else if(state === 'loading') {
+                    $('#upload-btn-place').html(uploadBtnState_Loading)
+                }
+            }
+
+            const renderResponse = (res) => {
+                console.log(res);
+                let text = ''
+
+                res.forEach(el => {
+                    const { status, data } = el
+                    const { id, ext, width, height, size } = data
+                    const sizeMB = Number.parseFloat(size / 1000 / 1000).toFixed(1);
+                    text += `<div class="one-res-file">
+                        <div class="img">
+                            <img src="/i/${id}"/>
+                        </div>
+                        <div class="info">
+                            <div class="one-info">ID: ${id}</div>
+                            <div class="one-info">EXT: ${ext}</div>
+                            <div class="one-info">W: ${width}</div>
+                            <div class="one-info">H: ${height}</div>
+                            <div class="one-info">SIZE: ${sizeMB} MB</div>
+                        </div>
+                    </div>`
+                })
+                $('#response-place').html(text)
+            }
+
+            const renderError = (text) => {
+                $('#error-place').html(text)
+            }
+
+            const initRender = () => {
+                renderForm()
+                renderUploadBtn('default')
+            }
+
+
+
+
+
+            const getFiles = () => {
+                const { files } = $('#upload-photo')[0]
+                const res = []
+
+                for(let i = 0; i < files.length; i++) {
+                    res.push(files[i])
+                }
+                return res
+            }
+
+            const onFileInputChange = (e) => {
+                const files = getFiles()
+                let res = ''
+                files.forEach(file => {
+                    const { name, size, type } = file
+                    console.log(name, size, type)
+
+                    const sizeMB = Number.parseFloat(size / 1000 / 1000).toFixed(1);
+
+                    res += `${type.split('/')[1]} | ${sizeMB}MB | ${name}<br>`
+                })
+
+                if(res) {
+                    $('#input-file-label').html(res)
+                } else {
+                    renderForm()
+                }
+            }
+
+
+            const onUploadBtnClick = () => {
+                
+                const files = getFiles()
+
+                if(files.length > 0) {
+
+                    renderUploadBtn('loading')
+
+                    const formData = new FormData();
+
+                    files.forEach(file => {
+                        formData.append( 
+                            "files[]", 
+                            file  
+                        );             
+                    });
+
+                    axios.post('/upload', formData, {
+                        headers: {
+                            "Content-type": "multipart/form-data",
+                        }
+                    })
+                    .then(function (response) {
+                        renderForm()
+                        renderUploadBtn('default')
+                        renderResponse(response.data)
+                    })
+                    .catch(function (error) {
+                        renderForm()
+                        renderUploadBtn('default')
+                        console.log(error);
+                        renderError(error.message)
+                    });
+
+                }
+            }
+
+
+            initRender()
+            $('#upload-btn-place').on('click', onUploadBtnClick)
+        </script>
+</body>
+</html>

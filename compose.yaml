@@ -4,7 +4,7 @@ services:
     build: 
       context: .
     ports:
-      - 7400:3000
+      - 7400:7400
     volumes:
       - picola_volume:/app/volume
     restart: always
