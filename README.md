@@ -1,7 +1,7 @@
 
 # Picola
 
-A selfhosted image hosting, compressor and loader. Uses Sharp for any operations
+A selfhosted image hosting, compressor and loader. Uses Sharp for any image operations
 
 
 ## Features
@@ -21,13 +21,13 @@ A selfhosted image hosting, compressor and loader. Uses Sharp for any operations
 Run in docker container
 
 ```bash
-  docker-compose up
+docker-compose up
 ```
 
 Run without docker
 
 ```bash
-  yarn start
+yarn start
 ```
 
 ## Development
@@ -35,33 +35,36 @@ Run without docker
 Dev server with hot reload
 
 ```bash
-  yarn dev
+yarn dev
 ```
 
 Build service
 
 ```bash
-  yarn build
+yarn build
 ```
 
 Start service
 
 ```bash
-  yarn start
+yarn start
 ```
 ## API
 
 #### Get original image
 
-```http
-  GET /i/:id
-  GET /img/:id
-  GET /image/:id
-  GET /v1/i/:id
-  GET /v1/img/:id
-  GET /v1/image/:id  
 ```
-
+GET /i/:id 
+```
+similar to
+```
+GET /i/:id
+GET /img/:id
+GET /image/:id
+GET /v1/i/:id
+GET /v1/img/:id
+GET /v1/image/:id  
+```
 
 | Parameter | Type     | Description                   |
 | :-------- | :------- | :---------------------------- |
@@ -69,8 +72,8 @@ Start service
 
 #### Get optimized image
 
-```http
-  GET /i/:id?format=webp&width=1920&quality=85
+```
+GET /i/:id?format=webp&width=1920&quality=85
 ```
 | Parameter | Type     | Description                        |
 | :-------- | :------- | :--------------------------------- |
@@ -93,15 +96,17 @@ Start service
 
 #### Upload image
 
-```http
-  POST /upload
+```
+POST /upload
 ```
 
 #### Pages
 
-```http
-  GET /
-  GET /docs
+```
+GET /
+```
+```
+GET /docs
 ```
 ## Tech Stack
 
