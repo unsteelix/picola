@@ -44,9 +44,11 @@ export const optionsMap: {[key: string]: any} = {
         group: 'engine',
         type: 'integer'
     },
-    'sharpen.sigma': {
+
+    /* other */
+    'sharpen': {
         group: 'other',
-        type: 'integer'
+        type: 'manyParamsInteger'
     },
     'blur': {
         group: 'other',
@@ -68,7 +70,12 @@ export const optionsMap: {[key: string]: any} = {
         group: 'other',
         type: 'integer'
     },
+    'flip': {
+        group: 'other',
+        type: 'boolean'
+    },
 
+    /* system */
     'dontsave': {
         group: 'system'
     },
@@ -93,6 +100,22 @@ export const getGroupNameOfParam = (name: string): string => {
 
 // return true, if path like this: 'modulate.hue'
 export const isLongPathName = (pathName: string) => pathName.split('.').length > 0
+
+// return type or null
+export const getQueryType = (queryName: string): string | null => {
+    const { type = null } = optionsMap[queryName]
+    return type
+}
+
+export const isQueryWithManyParams = (queryName: string): boolean => {
+    const type = getQueryType(queryName)
+    
+    if(!type) {
+        return false
+    }
+
+    return type.indexOf('manyParams') !== -1 ? true : false
+}
 
 
 export const queryParamsToOptions = (ctx: Context) => {
@@ -266,7 +289,13 @@ export const otherFormatImg = (ctx: Context, sharpEl: any, options: any) => {
 
         for(let key in other) {
             const val = other[key]
-            sharpEl = sharpEl[key](val)
+            const manyParams = isQueryWithManyParams(key)
+
+            if(manyParams) {
+                sharpEl = sharpEl[key](...val)
+            } else {
+                sharpEl = sharpEl[key](val)
+            }
         }
 
     }
@@ -368,28 +397,32 @@ export const isNeedSaving = (options: any) => {
 export const convertType = (type: string, value: string): string | number | Array<any> | boolean => {
 
     if(type === 'integer') {
-      return parseInt(value)
+        return parseInt(value)
     }
   
     if(type === 'float') {
-      return parseFloat(value)
+        return parseFloat(value)
     }
   
     if(type === 'array') {
-      return value.split(',').map(el => el.trim())
+        return value.split(',').map(el => el.trim())
     }
   
     if(type === 'arrayInteger') {
-      return value.split(',').map(el => parseInt(el))
+        return value.split(',').map(el => parseInt(el))
     }
   
     if(type === 'arrayFloat') {
-      return value.split(',').map(el => parseFloat(el))
+        return value.split(',').map(el => parseFloat(el))
     }
 
     if(type === 'boolean') {
         return value === 'true' ? true : false
-      }
+    }
+
+    if(type === 'manyParamsInteger') {
+        return value.split(',').map(el => parseInt(el))
+    }
 
     return value
 }

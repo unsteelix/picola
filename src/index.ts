@@ -22,6 +22,7 @@ router.get('/image/:id', imageV1Route)
 router.get('/img/:id', imageV1Route)
 router.get('/i/:id', imageV1Route)
 
+router.get('/v1/image/:id', imageV1Route)
 router.get('/v1/img/:id', imageV1Route)
 router.get('/v1/i/:id', imageV1Route)
 
