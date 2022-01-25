@@ -1,35 +1,34 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Picola</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="main.css" rel="stylesheet">
-    </head>
-    <body>
+	<head>
+		<title>Picola</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="main.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="links">
+			<a href="/">Home</a>
+			<a href="/docs">Docs</a>
+		</div>
 
-        <div class="links">
-            <a href="/">Home</a>
-            <a href="/docs">Docs</a>
-        </div>
+		<div class="pic-block">
+			<div class="pic-block-text">Picola</div>
+		</div>
 
-        <div class="pic-block">
-            <div class="pic-block-text">Picola</div>
-        </div>
+		<div class="error-block" id="error-place"></div>
 
-        <div class="error-block" id="error-place"></div>
+		<div class="form-block">
+			<div class="left">
+				<div id="form-place"></div>
+				<div id="upload-btn-place"></div>
+			</div>
+			<div class="right">
+				<div id="response-place"></div>
+			</div>
+		</div>
 
-        <div class="form-block">
-            <div class="left">
-                <div id="form-place"></div>
-                <div id="upload-btn-place"></div>
-            </div>
-            <div class="right">
-                <div id="response-place"></div>
-            </div>
-        </div>
-
-        <script src="https://code.jquery.com/jquery.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script src="main.js"></script>
-</body>
+		<script src="https://code.jquery.com/jquery.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<script src="main.js"></script>
+	</body>
 </html>

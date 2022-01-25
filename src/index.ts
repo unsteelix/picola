@@ -11,8 +11,8 @@ import uploadRoute from './routes/upload'
 import docsRoute from './routes/docs'
 import imageV1Route from './routes/imageV1'
 
-const app = new Koa();
-const router = new Router();
+const app = new Koa()
+const router = new Router()
 
 router.get('/', indexRoute)
 router.post('/upload', uploadRoute)
@@ -27,29 +27,29 @@ router.get('/v1/img/:id', imageV1Route)
 router.get('/v1/i/:id', imageV1Route)
 
 // Middlewares
-app.use(cors());
+app.use(cors())
 app.use(json())
 app.use(logger())
 app.use(body({ multipart: true }))
-app.use(serve('static'));
+app.use(serve('static'))
 app.use(async (ctx, next) => {
-  try {
-    await next();
-  } catch(e: any) {
-    const { name, message } = e
-    const msg = `[${name}] ${message}`
-    console.error(msg)
+	try {
+		await next()
+	} catch (e: any) {
+		const { name, message } = e
+		const msg = `[${name}] ${message}`
+		console.error(msg)
 
-    ctx.status = 400
-    ctx.body = msg
-  }
-});
+		ctx.status = 400
+		ctx.body = msg
+	}
+})
 
 // Routes
 app.use(router.routes()).use(router.allowedMethods())
 
 app.on('error', (err: Error, ctx: Context) => {
-  console.error('[SERVER ERROR]', err.message)
-});
+	console.error('[SERVER ERROR]', err.message)
+})
 
-app.listen(constants.PORT);
+app.listen(constants.PORT)
