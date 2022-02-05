@@ -3,7 +3,7 @@ import body from 'koa-better-body'
 import Router from 'koa-router'
 import json from 'koa-json'
 import logger from 'koa-logger'
-import cors from '@koa/cors'
+//import cors from '@koa/cors'
 import serve from 'koa-static'
 import constants from './utils/constants'
 import indexRoute from './routes/index'
@@ -27,7 +27,16 @@ router.get('/v1/img/:id', imageV1Route)
 router.get('/v1/i/:id', imageV1Route)
 
 // Middlewares
-app.use(cors())
+// app.use(
+// 	cors({
+// 		origin: '*',
+// 	})
+// )
+app.use(async (ctx, next) => {
+	ctx.set('Access-Control-Allow-Origin', '*')
+	ctx.set('Access-Control-Allow-Methods', 'POST, GET')
+	await next()
+})
 app.use(json())
 app.use(logger())
 app.use(body({ multipart: true }))

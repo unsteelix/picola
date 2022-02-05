@@ -20,7 +20,7 @@ const renderUploadBtn = (state) => {
 }
 
 const renderResponse = (res) => {
-    console.log(res);
+    //console.log(res);
     let text = ''
 
     res.forEach(el => {
