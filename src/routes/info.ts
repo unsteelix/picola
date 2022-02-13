@@ -8,20 +8,19 @@ export default async (ctx: Context, next: Next) => {
 	const token = ctx.header
 
 	if (id === 'all') {
+		const { cookie } = ctx.header
+		if (cookie) {
+			const token = cookie.split('picola-token=')[1].split(';')[0]
 
-		const { cookie } = ctx.header;
-		const token = cookie.split('picola-token=')[1].split(';')[0]
-
-		if(token === constants.TOKEN){
-			ctx.body = DB.get('/')
-			return
-		} else {
-			ctx.status = 401
-			return
+			if (token === constants.TOKEN) {
+				ctx.body = DB.get('/')
+				return
+			} else {
+				ctx.status = 401
+				return
+			}
 		}
-
 	} else {
-		
 		const info = DB.get(`/${id}`)
 		ctx.body = info
 		return
