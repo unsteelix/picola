@@ -45,6 +45,9 @@ const renderResponse = (res) => {
 
 const renderError = (text) => {
     $('#error-place').html(text)
+    setTimeout(() => {
+        $('#error-place').html('')
+    }, 2000)
 }
 
 const initRender = () => {

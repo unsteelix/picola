@@ -1,6 +1,7 @@
 import { JsonDB } from 'node-json-db'
 import { Config } from 'node-json-db/dist/lib/JsonDBConfig'
 import constants from '../utils/constants'
+import log from '../utils/logger'
 
 class Database {
 	filepath: string
@@ -15,77 +16,77 @@ class Database {
 		try {
 			this.db = new JsonDB(new Config(filepath, true, true, '/'))
 		} catch (e: any) {
-			console.error(`[DB] ${e.message}`)
+			log.error(`[DB] ${e.message}`)
 			throw new Error(e.message)
 		}
-		console.log(`[DB] Initialization ${filepath}`)
+		log.info(`[DB] Initialization ${filepath}`)
 	}
 
 	get(path: string) {
-		console.log('[DB] GET ' + path)
+		log.info('[DB] GET ' + path)
 
 		try {
 			const data = this.db.getData(path)
-			//console.log(data)
+			//log.info(data)
 			return data
 		} catch (e: any) {
-			console.error(`[DB] ${e.message}`)
+			log.error(`[DB] ${e.message}`)
 			throw new Error(e.message)
 		}
 	}
 
 	push(path: string, data: any) {
-		console.log('[DB] PUSH ' + path)
-		console.log(data)
+		log.info('[DB] PUSH ' + path)
+		log.info(data)
 
 		try {
 			this.db.push(path, data)
 			return this.db.getData(path)
 		} catch (e: any) {
-			console.error(`[DB] ${e.message}`)
+			log.error(`[DB] ${e.message}`)
 			throw new Error(e.message)
 		}
 	}
 
 	merge(path: string, data: any) {
-		console.log('[DB] MERGE ' + path)
-		console.log(data)
+		log.info('[DB] MERGE ' + path)
+		log.info(data)
 
 		try {
 			this.db.push(path, data, false)
 			return this.db.getData(path)
 		} catch (e: any) {
-			console.error(`[DB] ${e.message}`)
+			log.error(`[DB] ${e.message}`)
 			throw new Error(e.message)
 		}
 	}
 
 	delete(path: string) {
-		console.log('[DB] DELETE ' + path)
+		log.info('[DB] DELETE ' + path)
 		this.checkPath(path)
 
 		try {
 			this.db.delete(path)
 			return true
 		} catch (e: any) {
-			console.error(`[DB] ${e.message}`)
+			log.error(`[DB] ${e.message}`)
 			throw new Error(e.message)
 		}
 	}
 
 	count(path: string) {
-		console.log('[DB] COUNT ' + path)
+		log.info('[DB] COUNT ' + path)
 
 		try {
 			return this.db.count(path)
 		} catch (e: any) {
-			console.error(`[DB] ${e.message}`)
+			log.error(`[DB] ${e.message}`)
 			throw new Error(e.message)
 		}
 	}
 
 	index(path: string, index: string | number, propertyName?: string) {
-		console.log(`[DB] INDEX ${path} ${index}${propertyName ? ' ' + propertyName : ''}`)
+		log.info(`[DB] INDEX ${path} ${index}${propertyName ? ' ' + propertyName : ''}`)
 
 		try {
 			let value = null
@@ -102,7 +103,7 @@ class Database {
 
 			return value
 		} catch (e: any) {
-			console.error(`[DB] ${e.message}`)
+			log.error(`[DB] ${e.message}`)
 			throw new Error(e.message)
 		}
 	}
@@ -110,10 +111,10 @@ class Database {
 	reload() {
 		try {
 			this.db.reload()
-			console.log('[DB] reloaded')
+			log.info('[DB] reloaded')
 			return true
 		} catch (e: any) {
-			console.error(`[DB] ${e.message}`)
+			log.error(`[DB] ${e.message}`)
 			throw new Error(e.message)
 		}
 	}
@@ -122,7 +123,7 @@ class Database {
 		try {
 			this.db.getData(path)
 		} catch (e: any) {
-			console.error(`[DB] ${e.message}`)
+			log.error(`[DB] ${e.message}`)
 			throw new Error(e.message)
 		}
 	}

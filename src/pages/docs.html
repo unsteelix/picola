@@ -9,44 +9,52 @@
 		<div class="links">
 			<a href="/">Home</a>
 			<a href="/docs">Docs</a>
+			<a href="/preview">Preview</a>
 		</div>
 
-		<div class="pic-block">
-			<div class="pic-block-text">Picola</div>
-		</div>
+		<div class="page-content">
+			<div class="pic-block">
+				<div class="pic-block-text">Picola</div>
+			</div>
 
-		<div class="api-block">
-			<div class="one-api title">Get original image</div>
-			<div class="one-api">[GET] /i/:id</div>
-			<div class="one-api">[GET] /img/:id</div>
-			<div class="one-api">[GET] /image/:id</div>
+			<div class="api-block">
+				<div class="one-api title">Get original image</div>
+				<div class="one-api">[GET] /i/:id</div>
+				<div class="one-api">[GET] /img/:id</div>
+				<div class="one-api">[GET] /image/:id</div>
 
-			<div class="one-api title">Get optimized image</div>
-			<div class="one-api">[GET] /i/:id?f=webp&q=85&w=2000</div>
-			<br />
-			<div>get params:</div>
-			<div>[format][f] convert to format: jpeg / png / gif / webp</div>
-			<div>[width][w] resize to width</div>
-			<div>[height][h] resize to height</div>
-			<div>[quality][q] change compression quality</div>
-			<div>[modulate.brightness]</div>
-			<div>[modulate.saturation]</div>
-			<div>[modulate.hue]</div>
-			<div>[modulate.lightness]</div>
-			<div>[sharpen]</div>
-			<div>[blur]</div>
+				<div class="one-api title">Get original image info</div>
+				<div class="one-api">[GET] /info/:id</div>
+				<div class="one-api">[GET] /info/all</div>
 
-			<div class="one-api title">Upload image</div>
-			<div class="one-api">[POST] /upload</div>
+				<div class="one-api title">Get optimized image</div>
+				<div class="one-api">[GET] /i/:id?f=webp&q=85&w=2000</div>
+				<br />
+				<div>get params:</div>
+				<div>[format][f] convert to format: jpeg / png / gif / webp</div>
+				<div>[width][w] resize to width</div>
+				<div>[height][h] resize to height</div>
+				<div>[quality][q] change compression quality</div>
+				<div>[modulate.brightness]</div>
+				<div>[modulate.saturation]</div>
+				<div>[modulate.hue]</div>
+				<div>[modulate.lightness]</div>
+				<div>[sharpen]</div>
+				<div>[blur]</div>
 
-			<div class="one-api title">Pages</div>
-			<div class="one-api">[GET] /</div>
-			<div class="one-api">[GET] /docs</div>
+				<div class="one-api title">Upload image</div>
+				<div class="one-api">[POST] /upload</div>
 
-			See Sharp docs for another params:
-			<a href="https://sharp.pixelplumbing.com/api-operation"
-				>https://sharp.pixelplumbing.com/api-operation</a
-			>
+				<div class="one-api title">Pages</div>
+				<div class="one-api">[GET] /</div>
+				<div class="one-api">[GET] /docs</div>
+				<div class="one-api">[GET] /preview</div>
+
+				See Sharp docs for another params:
+				<a href="https://sharp.pixelplumbing.com/api-operation"
+					>https://sharp.pixelplumbing.com/api-operation</a
+				>
+			</div>
 		</div>
 
 		<script src="https://code.jquery.com/jquery.js"></script>
